@@ -1,4 +1,5 @@
 from random import choice, randint
+from warnings import warn
 
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a dictionary to mask target key's value.'''
@@ -17,6 +18,8 @@ def masqs(*target_keys, masq_char='*', masq_length=3, masq_string=''):
         return wrapper_1
     return wrapper_2
 
+# utility funcs
+
 def _masq_dict(target_keys, target_dict, masq_char='*', masq_length=3, masq_string=''):
     if not len(target_keys):
         return target_dict
@@ -34,15 +37,18 @@ def _masq_dict(target_keys, target_dict, masq_char='*', masq_length=3, masq_stri
         else: new_dict[key]=target_dict[key]
     return new_dict
 
-def _generate_masq_string(value, masq_char='*', masq_length=3, masq_string=''):
+def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_string=''):
     
     if masq_string != '':
+        if masq_char!='*' or masq_length!=3:
+            warn('masq_string overrides the other parameters in the masq decorator so may lead to unexpected masqing')
         return masq_string
     
-    masq_length = masq_length if masq_length >=0 else len(value)
+    masq_length = masq_length if masq_length >=0 else len(value_to_masq)
     
     masqed_value_chars=[]
     masq_func= None
+    
     if len(masq_char)==1 :
         masq_func = lambda : masq_char
     elif masq_char == 'grawlix':
@@ -51,6 +57,7 @@ def _generate_masq_string(value, masq_char='*', masq_length=3, masq_string=''):
         masq_func = _get_random_int_char
     elif masq_char == 'alphas':
         masq_func = _get_random_alpha_char
+    else: raise Exception
 
     for i in range(masq_length):
          masqed_value_chars.append(masq_func())

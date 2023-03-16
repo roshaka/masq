@@ -1,5 +1,6 @@
 from src.masq import masq, masqs
 from unittest.mock import patch
+import pytest
 
 def test_masq_decorator_returns_original_dictionary_if_no_target_keys():
     '''Tests that the original dictionary object is returned if no target_keys sepecified in the masq'''
@@ -163,6 +164,16 @@ def test_mask_string_overwrites_other_params_and_sets_value_equal_to_mask_string
         'status': 'excellent'
     }
 
+def test_conflicting_masq_decorator_params_raise_warning():
+    @masq('name', 'email', masq_string='REDACTED', masq_char='s')
+    def foo():
+        return dummy_dict()
+    
+
+    with pytest.warns():
+        masqed_dict = foo()
+
+
 def test_masqs_decorator_performs_masq_on_list_of_dictionaries():
     '''Tests that all dicts in a list are masqed.'''
     @masqs('email')
@@ -189,7 +200,6 @@ def test_masqs_decorator_performs_masq_on_list_of_dictionaries():
         'status': 'poor'
         }
     ]
-
 
 # Utility functions for testing
 def dummy_dict():
