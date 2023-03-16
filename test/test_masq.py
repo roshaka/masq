@@ -44,6 +44,22 @@ def test_masq_decorator_masks_multiple_target_keys():
         'status': 'excellent'
     }
 
+def test_masq_char_keyword_param():
+    '''Tests that the masked value is created by the masq_char'''
+    @masq('name', masq_char='?')
+    def foo():
+        return dummy_dict()
+    
+    masqed_dict = foo()
+    assert masqed_dict == {
+        'name': '???',
+        'email': 'jane@coolmail.com',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+    }
+
 # Utility functions for testing
 def dummy_dict():
     '''Returns a dict for simplifed testing setup'''

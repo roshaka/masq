@@ -1,5 +1,5 @@
 
-def masq(*target_keys):
+def masq(*target_keys, masq_char='*'):
     '''Decorate a func that returns a dictionary to mask target key's value'''
     def wrapper_2(func):
         def wrapper_1():
@@ -10,7 +10,7 @@ def masq(*target_keys):
             new_dict={}
             for key in keys:
                 if key in target_keys:
-                    new_dict[key]='***'
+                    new_dict[key]=masq_char*3
                 else: new_dict[key]=target_dict[key]
             return new_dict
         return wrapper_1
