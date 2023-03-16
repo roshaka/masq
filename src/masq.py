@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, randint
 
 def masq(*target_keys, masq_char='*', masq_length=3):
     '''Decorate a func that returns a dictionary to mask target key's value.'''
@@ -37,11 +37,21 @@ def _generate_masq_string(value, masq_char='*', masq_length=3):
     masq_length = masq_length if masq_length >=0 else len(value)
     
     masqed_value_chars=[]
+    masq_func= None
+    if len(masq_char)==1 :
+        masq_func = lambda : masq_char
+    elif masq_char == 'grawlix':
+        masq_func = _get_random_grawlix_char
+    elif masq_char == 'numerics':
+        masq_func = _get_random_int_char
+
     for i in range(masq_length):
-        masqed_value_chars.append(masq_char if masq_char!='grawlix' else _get_grawlix_char())
+         masqed_value_chars.append(masq_func())
 
     return ''.join(masqed_value_chars)
 
-def _get_grawlix_char():
+def _get_random_grawlix_char():
     return choice(['!','@','£',"$",'%','&','*','?','#','~'])
 
+def _get_random_int_char():
+    return randint(0,9)
