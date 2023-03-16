@@ -1,4 +1,4 @@
-from src.masq import masq
+from src.masq import masq, masqs
 from unittest.mock import patch
 
 
@@ -112,10 +112,40 @@ def test_masq_char_generates_grawlix_if_equals_grawlix(func):
         'status': 'excellent'
     }
 
+def test_masqs_decorator_performs_masq_on_list_of_dictionaries():
+    '''Tests that all dicts in a list are masqed.'''
+    @masqs('email')
+    def foo():
+        return dummy_dicts_list()
+    
+    masqed_dicts_list = foo()
+
+    assert masqed_dicts_list == [
+        {
+        'name': 'Jane Smith',
+        'email': '***',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+        },
+        {
+        'name': 'David Jones',
+        'email': '***',
+        'telephones': {
+            'mobile': '07787 123456'
+        },
+        'status': 'poor'
+        }
+    ]
+
+
+
+
 
 # Utility functions for testing
 def dummy_dict():
-    '''Returns a dict for simplifed testing setup'''
+    '''Returns a dict for simplifed testing setup.'''
     return {
         'name': 'Jane Smith',
         'email': 'jane@coolmail.com',
@@ -124,3 +154,26 @@ def dummy_dict():
         },
         'status': 'excellent'
     }
+
+def dummy_dicts_list():
+    '''Returns a list of dicts for simplifed testing setup.'''
+    return [
+        {
+        'name': 'Jane Smith',
+        'email': 'jane@coolmail.com',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+        },
+        {
+        'name': 'David Jones',
+        'email': 'dave@wahoo.com',
+        'telephones': {
+            'mobile': '07787 123456'
+        },
+        'status': 'poor'
+        }
+    ]
+
+       
