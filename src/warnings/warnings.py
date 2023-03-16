@@ -1,0 +1,2 @@
+class MasqKeywordArgumentConflict(Warning):
+    pass

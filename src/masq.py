@@ -23,6 +23,7 @@ def masqs(*target_keys, masq_char='*', masq_length=3, masq_string=''):
 def _masq_dict(target_keys, target_dict, masq_char='*', masq_length=3, masq_string=''):
     if not len(target_keys):
         return target_dict
+    
     keys = target_dict.keys()
     new_dict={}
     for key in keys:
