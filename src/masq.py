@@ -10,7 +10,9 @@ def masq(*target_keys, masq_char='*', masq_length=3):
             new_dict={}
             for key in keys:
                 if key in target_keys:
-                    new_dict[key]=masq_char*int(masq_length)
+                    char_count_masq = masq_length if masq_length >=0 else len(target_dict[key])
+
+                    new_dict[key]=masq_char*int(char_count_masq)
                 else: new_dict[key]=target_dict[key]
             return new_dict
         return wrapper_1
