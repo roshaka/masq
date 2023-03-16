@@ -1,7 +1,6 @@
 from src.masq import masq, masqs
 from unittest.mock import patch
 
-
 def test_masq_decorator_returns_original_dictionary_if_no_target_keys():
     '''Tests that the original dictionary object is returned if no target_keys sepecified in the masq'''
     input =  dummy_dict()
