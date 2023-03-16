@@ -147,6 +147,22 @@ def test_masq_char_generates_random_ints_if_equals_numerics(func):
         'status': 'excellent'
     }
 
+def test_mask_string_overwrites_other_params_and_sets_value_equal_to_mask_string():
+    @masq('name', 'email', masq_string='REDACTED')
+    def foo():
+        return dummy_dict()
+    
+    masqed_dict = foo()
+
+    assert masqed_dict == {
+        'name': 'REDACTED',
+        'email': 'REDACTED',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+    }
+
 def test_masqs_decorator_performs_masq_on_list_of_dictionaries():
     '''Tests that all dicts in a list are masqed.'''
     @masqs('email')
