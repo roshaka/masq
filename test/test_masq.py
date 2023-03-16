@@ -112,7 +112,6 @@ def test_masq_char_generates_grawlix_if_equals_grawlix(func):
         'status': 'excellent'
     }
 
-
 # Utility functions for testing
 def dummy_dict():
     '''Returns a dict for simplifed testing setup'''
