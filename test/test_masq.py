@@ -1,4 +1,5 @@
 from src.masq import masq
+from unittest.mock import patch
 
 
 def test_masq_decorator_returns_original_dictionary_if_no_target_keys():
@@ -62,7 +63,7 @@ def test_masq_char_keyword_param():
 
 def test_masq_length_keyword_param():
     '''Tests that the masked value is created by the masq_char'''
-    @masq('name', masq_length='7')
+    @masq('name', masq_length=7)
     def foo():
         return dummy_dict()
     
@@ -75,6 +76,42 @@ def test_masq_length_keyword_param():
         },
         'status': 'excellent'
     }
+
+def test_masq_length_maintains_length_of_original_key_if_minus_1():
+    '''Tests that the masked value is created by the masq_char'''
+    @masq('name', masq_length=-1)
+    def foo():
+        return dummy_dict()
+    
+    masqed_dict = foo()
+
+    assert masqed_dict == {
+        'name': '**********',
+        'email': 'jane@coolmail.com',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+    }
+
+@patch('src.masq._get_grawlix_char', return_value ='#')
+def test_masq_char_generates_grawlix_if_equals_grawlix(func):
+    '''Tests masq_char="grawlix" returns grawlix chars'''
+    @masq('name', masq_char='grawlix')
+    def foo():
+        return dummy_dict()
+    
+    masqed_dict = foo()
+
+    assert masqed_dict == {
+        'name': '###',
+        'email': 'jane@coolmail.com',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+    }
+
 
 # Utility functions for testing
 def dummy_dict():
