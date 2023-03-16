@@ -1,5 +1,6 @@
 from src.masq import masq
 from test_dummies.dummies import dummy_dict
+from src.masq_warnings import *
 import pytest
 
 def test_conflicting_masq_decorator_params_raise_warning():
@@ -7,5 +8,5 @@ def test_conflicting_masq_decorator_params_raise_warning():
     def foo():
         return dummy_dict()
 
-    with pytest.warns():
+    with pytest.warns(MasqKeywordArgumentConflict):
         foo()

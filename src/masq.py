@@ -1,5 +1,7 @@
 from random import choice, randint
 from warnings import warn
+from src.masq_warnings import *
+from src.masq_errors import *
 
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a dictionary to mask target key's value.'''
@@ -26,6 +28,11 @@ def _masq_dict(target_keys, target_dict, masq_char='*', masq_length=3, masq_stri
     
     keys = target_dict.keys()
     new_dict={}
+
+    for target_key in target_keys:
+        if target_key not in keys:
+            raise InvalidMasqKeyError()
+
     for key in keys:
         if key in target_keys:
             masqed_value = _generate_masq_string(
@@ -42,7 +49,7 @@ def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_stri
     
     if masq_string != '':
         if masq_char!='*' or masq_length!=3:
-            warn('masq_string overrides the other parameters in the masq decorator so may lead to unexpected masqing')
+            warn('masq_string overrides the other parameters in the masq decorator so may lead to unexpected masqing', MasqKeywordArgumentConflict )
         return masq_string
     
     masq_length = masq_length if masq_length >=0 else len(value_to_masq)

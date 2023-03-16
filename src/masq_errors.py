@@ -1,0 +1,4 @@
+
+class InvalidMasqKeyError(Exception):
+    pass
+
