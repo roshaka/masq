@@ -44,6 +44,8 @@ def _generate_masq_string(value, masq_char='*', masq_length=3):
         masq_func = _get_random_grawlix_char
     elif masq_char == 'numerics':
         masq_func = _get_random_int_char
+    elif masq_char == 'alphas':
+        masq_func = _get_random_alpha_char
 
     for i in range(masq_length):
          masqed_value_chars.append(masq_func())
@@ -55,3 +57,8 @@ def _get_random_grawlix_char():
 
 def _get_random_int_char():
     return randint(0,9)
+
+def _get_random_alpha_char():
+    ascii_alphas = list(range(67,91))
+    ascii_alphas.extend(list(range(97,123)))
+    return chr(choice(ascii_alphas))

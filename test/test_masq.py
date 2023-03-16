@@ -95,7 +95,7 @@ def test_masq_length_maintains_length_of_original_key_if_minus_1():
 
 @patch('src.masq._get_random_grawlix_char', return_value ='#')
 def test_masq_char_generates_grawlix_if_equals_grawlix(func):
-    '''Tests masq_char="grawlix" returns random grawlix chars'''
+    '''Tests masq_char="grawlix" returns random grawlix char'''
     @masq('name', masq_char='grawlix')
     def foo():
         return dummy_dict()
@@ -113,7 +113,7 @@ def test_masq_char_generates_grawlix_if_equals_grawlix(func):
 
 @patch('src.masq._get_random_int_char', return_value ='4')
 def test_masq_char_generates_random_ints_if_equals_numerics(func):
-    '''Tests masq_char="numerics" returns random int chars'''
+    '''Tests masq_char="numerics" returns random int char'''
     @masq('name', masq_char='numerics')
     def foo():
         return dummy_dict()
@@ -122,6 +122,24 @@ def test_masq_char_generates_random_ints_if_equals_numerics(func):
 
     assert masqed_dict == {
         'name': '444',
+        'email': 'jane@coolmail.com',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+    }
+
+@patch('src.masq._get_random_alpha_char', return_value ='X')
+def test_masq_char_generates_random_ints_if_equals_numerics(func):
+    '''Tests masq_char="alphas" returns random alpha char'''
+    @masq('name', masq_char='alphas')
+    def foo():
+        return dummy_dict()
+    
+    masqed_dict = foo()
+
+    assert masqed_dict == {
+        'name': 'XXX',
         'email': 'jane@coolmail.com',
         'telephones': {
             'mobile': '07999 987654'
@@ -155,7 +173,6 @@ def test_masqs_decorator_performs_masq_on_list_of_dictionaries():
         'status': 'poor'
         }
     ]
-
 
 
 # Utility functions for testing
