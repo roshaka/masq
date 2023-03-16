@@ -1,6 +1,5 @@
-from src.masq import masq, masqs
-from unittest.mock import patch
-from src.utils.dummies import dummy_dict
+from src.masq import masq
+from test_dummies.dummies import dummy_dict
 import pytest
 
 def test_conflicting_masq_decorator_params_raise_warning():
