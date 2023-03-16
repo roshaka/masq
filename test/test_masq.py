@@ -60,6 +60,22 @@ def test_masq_char_keyword_param():
         'status': 'excellent'
     }
 
+def test_masq_length_keyword_param():
+    '''Tests that the masked value is created by the masq_char'''
+    @masq('name', masq_length='7')
+    def foo():
+        return dummy_dict()
+    
+    masqed_dict = foo()
+    assert masqed_dict == {
+        'name': '*******',
+        'email': 'jane@coolmail.com',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+    }
+
 # Utility functions for testing
 def dummy_dict():
     '''Returns a dict for simplifed testing setup'''
