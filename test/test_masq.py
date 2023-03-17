@@ -1,6 +1,7 @@
 from src.masq import masq, masqs
 from unittest.mock import patch
 from test_dummies.dummies import *
+import pytest
 
 def test_masq_decorator_returns_original_dictionary_if_no_target_keys():
     '''Tests that the original dictionary object is returned if no target_keys sepecified in the masq'''
@@ -158,6 +159,24 @@ def test_mask_string_overwrites_other_params_and_sets_value_equal_to_mask_string
     assert masqed_dict == {
         'name': 'REDACTED',
         'email': 'REDACTED',
+        'telephones': {
+            'mobile': '07999 987654'
+        },
+        'status': 'excellent'
+    }
+
+def test_masq_max_length_limits_masq():
+    
+    with pytest.warns(Warning):
+        @masq('name', masq_length=100 )
+        def foo():
+            return dummy_dict()
+    
+    masqed_dict = foo()
+
+    assert masqed_dict == {
+        'name': '********************************',
+        'email': 'jane@coolmail.com',
         'telephones': {
             'mobile': '07999 987654'
         },

@@ -2,6 +2,7 @@ from random import choice, randint
 from warnings import warn
 from src.masq_warnings import *
 from src.masq_errors import *
+from src.masq_constant import *
 
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a dictionary to mask target key's value.'''
@@ -57,7 +58,8 @@ def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_stri
         return masq_string
     
     masq_length = masq_length if masq_length >=0 else len(value_to_masq)
-    
+    masq_length = MAX_MASQ_LENGTH if masq_length > MAX_MASQ_LENGTH else masq_length
+
     masqed_value_chars=[]
     masq_func= None
     
@@ -95,5 +97,5 @@ def _validate_masq_length(masq_length):
     if masq_length < -1:
         raise MasqLengthError("masq_length must be -1 or greater.")
     
-    if masq_length > 32:
-        warn('masq_length must be less than or equal to 32', MasqLengthWarning)
+    if masq_length > MAX_MASQ_LENGTH:
+        warn(f'masq_length must be less than or equal to {MAX_MASQ_LENGTH}', MasqLengthWarning)
