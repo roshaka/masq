@@ -1,4 +1,4 @@
-from src.masq import masq
+from src.masq import masq, masqs
 from src.masq_errors import *
 from test_dummies.dummies import dummy_dict
 import pytest
@@ -23,7 +23,7 @@ def test_non_int_type_masq_length_raises_MasqLengthError():
         def foo():
             return dummy_dict()
 
-def test_non_int_type_masq_length_raises_MasqLengthError():
+def test_decorating_a_function_that_does_not_return_dict_with_masq_raises_FunctionReturnTypeError():
     with pytest.raises(FunctionReturnTypeError) as e:
         @masq('name')
         def foo():
@@ -32,3 +32,11 @@ def test_non_int_type_masq_length_raises_MasqLengthError():
 
     assert str(e.value) == "foo does not return a dictionary and cannot be decorated with @masq"
 
+def test_decorating_a_function_that_does_not_return_list_of_dicts_with_masqs_raises_FunctionReturnTypeError():
+    with pytest.raises(FunctionReturnTypeError) as e:
+        @masqs('name')
+        def foo():
+            return "not a list of dicts"
+        foo()
+
+    assert str(e.value) == "foo does not return a list of dictionaries and cannot be decorated with @masqs"

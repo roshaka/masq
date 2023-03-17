@@ -15,7 +15,6 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
             dictionary = func()
             if type(dictionary) is not dict:
                 raise FunctionReturnTypeError(f'{func.__name__} does not return a dictionary and cannot be decorated with @masq')
-
             return _masq_dict(target_keys, dictionary, masq_char, masq_length, masq_string)
         return wrapper_1
     return wrapper_2
@@ -25,6 +24,11 @@ def masqs(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     def wrapper_2(func):
         def wrapper_1():
             dicts = func()
+            if not isinstance(dicts, list):
+                e = f'{func.__name__} does not return a list of dictionaries and cannot be decorated with @masqs'
+                raise FunctionReturnTypeError(e)
+            if not all(isinstance(d, dict) for d in dicts):
+                raise FunctionReturnTypeError(f'{d} is not a dictionary and so {func.__name__} cannot be decorated with @masqs')
             return [_masq_dict(target_keys, d, masq_char, masq_length, masq_string) for d in dicts]
         return wrapper_1
     return wrapper_2
