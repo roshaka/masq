@@ -5,6 +5,8 @@ from src.masq_errors import *
 
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a dictionary to mask target key's value.'''
+    _validate_masq_length(masq_length)
+
     def wrapper_2(func):
         def wrapper_1():
             return _masq_dict(target_keys, func(), masq_char, masq_length, masq_string)
@@ -31,7 +33,7 @@ def _masq_dict(target_keys, target_dict, masq_char='*', masq_length=3, masq_stri
 
     for target_key in target_keys:
         if target_key not in keys:
-            raise InvalidMasqKeyError()
+            raise MasqKeyError()
 
     for key in keys:
         if key in target_keys:
@@ -82,3 +84,10 @@ def _get_random_alpha_char():
     ascii_alphas = list(range(67,91))
     ascii_alphas.extend(list(range(97,123)))
     return chr(choice(ascii_alphas))
+
+def _validate_masq_length(masq_length):
+    if type(masq_length) is not int:
+        raise MasqLengthError("masq_length must be an integer.")
+    
+    if masq_length < -1:
+        raise MasqLengthError("masq_length must be -1 or greater.")
