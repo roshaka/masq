@@ -6,4 +6,3 @@ class MasqKeywordArgumentConflict(MasqWarning):
 
 class MasqLengthWarning(MasqWarning):
     pass
-
