@@ -31,3 +31,4 @@ def test_non_int_type_masq_length_raises_MasqLengthError():
         foo()
 
     assert str(e.value) == "foo does not return a dictionary and cannot be decorated with @masq"
+
