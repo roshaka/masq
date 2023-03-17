@@ -5,6 +5,8 @@ from src.masq_errors import *
 
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a dictionary to mask target key's value.'''
+    
+    #validate decorator inputs
     _validate_masq_length(masq_length)
 
     def wrapper_2(func):
@@ -85,6 +87,7 @@ def _get_random_alpha_char():
     ascii_alphas.extend(list(range(97,123)))
     return chr(choice(ascii_alphas))
 
+# validate decorator input
 def _validate_masq_length(masq_length):
     if type(masq_length) is not int:
         raise MasqLengthError("masq_length must be an integer.")
