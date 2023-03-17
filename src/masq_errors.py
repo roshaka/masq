@@ -8,5 +8,8 @@ class MasqKeyError(MasqError):
 class MasqLengthError(MasqError):
     pass
 
+class MasqStringError(MasqError):
+    pass
+
 class FunctionReturnTypeError(MasqError):
     pass

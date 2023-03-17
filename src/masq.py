@@ -9,6 +9,8 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     
     #validate decorator inputs
     _validate_masq_length(masq_length)
+    _validate_masq_string(masq_string)
+
 
     def wrapper_2(func):
         def wrapper_1():
@@ -28,7 +30,7 @@ def masqs(*target_keys, masq_char='*', masq_length=3, masq_string=''):
                 e = f'{func.__name__} does not return a list of dictionaries and cannot be decorated with @masqs'
                 raise FunctionReturnTypeError(e)
             if not all(isinstance(d, dict) for d in dicts):
-                raise FunctionReturnTypeError(f'{d} is not a dictionary and so {func.__name__} cannot be decorated with @masqs')
+                raise FunctionReturnTypeError(f'{dicts} does not contain all dictionaries and so {func.__name__} cannot be decorated with @masqs')
             return [_masq_dict(target_keys, d, masq_char, masq_length, masq_string) for d in dicts]
         return wrapper_1
     return wrapper_2
@@ -99,7 +101,7 @@ def _get_random_alpha_char():
 
 # validate decorator input
 def _validate_masq_length(masq_length):
-    if type(masq_length) is not int:
+    if not isinstance(masq_length,int):
         raise MasqLengthError("masq_length must be an integer.")
     
     if masq_length < -1:
@@ -107,3 +109,10 @@ def _validate_masq_length(masq_length):
     
     if masq_length > MAX_MASQ_LENGTH:
         warn(f'masq_length must be less than or equal to {MAX_MASQ_LENGTH}', MasqLengthWarning)
+    
+def _validate_masq_string(masq_string):
+    if not isinstance(masq_string,str):
+        raise MasqStringError(f'masq_string "{masq_string}" must be a string')
+    
+    if len(masq_string) > MAX_MASQ_LENGTH:
+        raise MasqStringError(f'masq_string "{masq_string}" must have a length <= {MAX_MASQ_LENGTH}')
