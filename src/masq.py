@@ -8,9 +8,10 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a dictionary to mask target key's value.'''
     
     #validate decorator inputs
+    _validate_masq_char(masq_char)
     _validate_masq_length(masq_length)
     _validate_masq_string(masq_string)
-
+    # validate target_keys
 
     def wrapper_2(func):
         def wrapper_1():
@@ -116,3 +117,10 @@ def _validate_masq_string(masq_string):
     
     if len(masq_string) > MAX_MASQ_LENGTH:
         raise MasqStringError(f'masq_string "{masq_string}" must have a length <= {MAX_MASQ_LENGTH}')
+
+def _validate_masq_char(masq_char):
+    if not isinstance(masq_char,str):
+        raise MasqCharError(f'masq_char "{masq_char}" must be type string')
+    
+    if len(masq_char) > 1 and masq_char not in masq_char_specials():
+        raise MasqCharError(f'masq_char "{masq_char}" must be a str of length 1 or one of the following special strings:\n{masq_char_specials()}')

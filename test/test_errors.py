@@ -62,3 +62,21 @@ def test_decorating_a_function_that_does_not_return_list_of_dicts_with_masqs_rai
         foo()
 
     assert str(e.value) == "foo does not return a list of dictionaries and cannot be decorated with @masqs"
+
+def test_validate_masq_char_raises_MasqCharError_for_non_string_type_input():
+    with pytest.raises(MasqCharError) as e:
+        @masq('name', masq_char=[])
+        def foo():
+            return dummy_dict
+        foo()
+
+    assert str(e.value) == 'masq_char "[]" must be type string'
+
+def test_validate_masq_char_raises_MasqCharError_if_str_length_greater_than_1_and_not_special():
+    with pytest.raises(MasqCharError) as e:
+        @masq('name', masq_char='no')
+        def foo():
+            return dummy_dict
+        foo()
+
+    assert str(e.value) == f'masq_char "no" must be a str of length 1 or one of the following special strings:\n{masq_char_specials()}'
