@@ -7,3 +7,6 @@ class MasqKeyError(MasqError):
 
 class MasqLengthError(MasqError):
     pass
+
+class FunctionReturnTypeError(MasqError):
+    pass

@@ -22,3 +22,12 @@ def test_non_int_type_masq_length_raises_MasqLengthError():
         @masq(masq_length='whoops')
         def foo():
             return dummy_dict()
+
+def test_non_int_type_masq_length_raises_MasqLengthError():
+    with pytest.raises(FunctionReturnTypeError) as e:
+        @masq('name')
+        def foo():
+            return "not a dict"
+        foo()
+
+    assert str(e.value) == "foo does not return a dictionary and cannot be decorated with @masq"

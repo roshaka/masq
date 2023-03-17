@@ -12,7 +12,11 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
 
     def wrapper_2(func):
         def wrapper_1():
-            return _masq_dict(target_keys, func(), masq_char, masq_length, masq_string)
+            dictionary = func()
+            if type(dictionary) is not dict:
+                raise FunctionReturnTypeError(f'{func.__name__} does not return a dictionary and cannot be decorated with @masq')
+
+            return _masq_dict(target_keys, dictionary, masq_char, masq_length, masq_string)
         return wrapper_1
     return wrapper_2
 
