@@ -1,19 +1,18 @@
-from src.masq import masq, masqs
+from src.masq import masq
 from unittest.mock import patch
 from test_dummies.dummies import *
 import pytest
 
-# TODO
-# def test_masq_decorator_returns_original_dictionary_if_no_target_keys():
-#     '''Tests that the original dictionary object is returned if no target_keys sepecified in the masq'''
-#     input =  dummy_dict()
+def test_masq_decorator_does_not_mutate_input():
+    '''Tests that a deep copy dictionary object is returned if no target_keys sepecified in the masq'''
+    input =  dummy_dict()
 
-#     @masq()
-#     def foo():
-#         return input
+    @masq('name')
+    def foo():
+        return input
     
-#     output = foo()
-#     assert input == output
+    output = foo()
+    assert input != output
 
 def test_masq_decorator_masks_single_target_key():
     '''Tests that masq decorator with single target_key masks target dictionary key'''
@@ -200,9 +199,9 @@ def test_masq_max_length_limits_masq():
         'status': 'excellent'
     }
 
-def test_masqs_decorator_performs_masq_on_list_of_dictionaries():
+def test_masq_decorator_performs_masq_on_list_of_dictionaries():
     '''Tests that all dicts in a list are masqed.'''
-    @masqs('email')
+    @masq('email')
     def foo():
         return dummy_dicts_list()
     

@@ -14,29 +14,14 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
 
     def wrapper_2(func):
         def wrapper_1():
-            dictionary = func()
-            if type(dictionary) is not dict:
-                raise FunctionReturnTypeError(f'{func.__name__} does not return a dictionary and cannot be decorated with @masq')
-            return _masq_dict(
-                target_keys, 
-                dictionary,
-                masq_char,
-                masq_length,
-                masq_string)
-        return wrapper_1
-    return wrapper_2
-
-def masqs(*target_keys, masq_char='*', masq_length=3, masq_string=''):
-    '''Returns a list of deep copied dictionaries with masked target_keys values.'''
-    def wrapper_2(func):
-        def wrapper_1():
-            dicts = func()
-            if not isinstance(dicts, list):
-                e = f'{func.__name__} does not return a list of dictionaries and cannot be decorated with @masqs'
-                raise FunctionReturnTypeError(e)
-            if not all(isinstance(d, dict) for d in dicts):
-                raise FunctionReturnTypeError(f'{dicts} does not contain all dictionaries and so {func.__name__} cannot be decorated with @masqs')
-            return [_masq_dict(target_keys, d, masq_char, masq_length, masq_string) for d in dicts]
+            output = func()
+            if isinstance(output, list):
+                if all([isinstance(d, dict) for d in output]):
+                    return [_masq_dict(target_keys, d, masq_char, masq_length, masq_string) for d in output]
+            elif isinstance(output, dict):
+                return _masq_dict(target_keys, output, masq_char, masq_length, masq_string)
+            else:
+                raise FunctionReturnTypeError(f'{func.__name__} does not return a dictionary or list of dictionaries and cannot be decorated with @masq')
         return wrapper_1
     return wrapper_2
 
@@ -49,11 +34,11 @@ def _masq_dict(target_keys, target_dict, masq_char, masq_length, masq_string):
         return copy_dict
 
     for target_key in target_keys:
-        _recursive_masq_key(target_key, copy_dict, masq_char, masq_length, masq_string)
+        _masq_key(target_key, copy_dict, masq_char, masq_length, masq_string)
         
     return copy_dict
 
-def _recursive_masq_key(target_key, target_dict, masq_char, masq_length, masq_string):
+def _masq_key(target_key, target_dict, masq_char, masq_length, masq_string):
     try:
         keys = target_key.split('.')
         if len(keys) == 1:
@@ -63,7 +48,7 @@ def _recursive_masq_key(target_key, target_dict, masq_char, masq_length, masq_st
         else :
             nested_dict = target_dict[keys[0]]
             next_target_key = '.'.join(keys[1:])
-            _recursive_masq_key(next_target_key, nested_dict, masq_char, masq_length, masq_string)
+            _masq_key(next_target_key, nested_dict, masq_char, masq_length, masq_string)
     except:
         raise MasqKeyError()
 
