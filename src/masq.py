@@ -3,27 +3,31 @@ from warnings import warn
 from src.masq_warnings import *
 from src.masq_errors import *
 from src.masq_constant import *
+from copy import deepcopy
 
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
-    '''Decorate a func that returns a dictionary to mask target key's value.'''
+    '''Decorate a func that returns a deep copied dictionary to mask target key's value.'''
     
-    #validate decorator inputs
     _validate_masq_char(masq_char)
     _validate_masq_length(masq_length)
     _validate_masq_string(masq_string)
-    # validate target_keys
 
     def wrapper_2(func):
         def wrapper_1():
             dictionary = func()
             if type(dictionary) is not dict:
                 raise FunctionReturnTypeError(f'{func.__name__} does not return a dictionary and cannot be decorated with @masq')
-            return _masq_dict(target_keys, dictionary, masq_char, masq_length, masq_string)
+            return _masq_dict(
+                target_keys, 
+                dictionary,
+                masq_char,
+                masq_length,
+                masq_string)
         return wrapper_1
     return wrapper_2
 
 def masqs(*target_keys, masq_char='*', masq_length=3, masq_string=''):
-    '''Returns a list of shallow copied dictionaries with masked target_keys values.'''
+    '''Returns a list of deep copied dictionaries with masked target_keys values.'''
     def wrapper_2(func):
         def wrapper_1():
             dicts = func()
@@ -38,28 +42,32 @@ def masqs(*target_keys, masq_char='*', masq_length=3, masq_string=''):
 
 # utility funcs
 
-def _masq_dict(target_keys, target_dict, masq_char='*', masq_length=3, masq_string=''):
-    if not len(target_keys):
-        return target_dict
+def _masq_dict(target_keys, target_dict, masq_char, masq_length, masq_string):
     
-    keys = target_dict.keys()
-    new_dict={}
+    copy_dict = deepcopy(target_dict)
+    if not len(target_keys):
+        return copy_dict
 
     for target_key in target_keys:
-        if target_key not in keys:
-            raise MasqKeyError()
+        _recursive_masq_key(target_key, copy_dict, masq_char, masq_length, masq_string)
+        
+    return copy_dict
 
-    for key in keys:
-        if key in target_keys:
-            masqed_value = _generate_masq_string(
-                target_dict[key],
-                masq_char,
-                masq_length,
-                masq_string
-            )
-            new_dict[key]= masqed_value
-        else: new_dict[key]=target_dict[key]
-    return new_dict
+def _recursive_masq_key(target_key, target_dict, masq_char, masq_length, masq_string):
+    try:
+        keys = target_key.split('.')
+        if len(keys) == 1:
+            key=keys[0]
+            masq = _generate_masq_string(target_dict[key], masq_char, masq_length, masq_string)
+            target_dict[key] = masq
+        else :
+            nested_dict = target_dict[keys[0]]
+            next_target_key = '.'.join(keys[1:])
+            _recursive_masq_key(next_target_key, nested_dict, masq_char, masq_length, masq_string)
+    except:
+        raise MasqKeyError()
+
+#masq_string generation
 
 def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_string=''):
     
@@ -100,7 +108,8 @@ def _get_random_alpha_char():
     ascii_alphas.extend(list(range(97,123)))
     return chr(choice(ascii_alphas))
 
-# validate decorator input
+# validate decorator arguments
+
 def _validate_masq_length(masq_length):
     if not isinstance(masq_length,int):
         raise MasqLengthError("masq_length must be an integer.")
@@ -124,3 +133,5 @@ def _validate_masq_char(masq_char):
     
     if len(masq_char) > 1 and masq_char not in masq_char_specials():
         raise MasqCharError(f'masq_char "{masq_char}" must be a str of length 1 or one of the following special strings:\n{masq_char_specials()}')
+
+

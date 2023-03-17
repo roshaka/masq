@@ -19,3 +19,6 @@ class FunctionReturnTypeError(MasqError):
 
 class InvalidMasqArgument(MasqError):
     pass
+
+class InvalidMasqKeywordError(MasqError):
+    pass

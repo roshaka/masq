@@ -77,6 +77,5 @@ def test_validate_masq_char_raises_MasqCharError_if_str_length_greater_than_1_an
         @masq('name', masq_char='no')
         def foo():
             return dummy_dict
-        foo()
 
     assert str(e.value) == f'masq_char "no" must be a str of length 1 or one of the following special strings:\n{masq_char_specials()}'
