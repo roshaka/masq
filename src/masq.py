@@ -91,3 +91,6 @@ def _validate_masq_length(masq_length):
     
     if masq_length < -1:
         raise MasqLengthError("masq_length must be -1 or greater.")
+    
+    if masq_length > 32:
+        warn('masq_length must be less than or equal to 32', MasqLengthWarning)
