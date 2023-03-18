@@ -495,7 +495,7 @@ def test_masq_value_that_is_dict():
     }
 
 def test_deep_nester_values_test():
-    """Tests masqing of deeply nested values"""
+    '''Tests masqing of deeply nested values'''
     @masq('telephones.mobiles.home', 'hobbies.more coding', 'name')
     def foo():
         return {

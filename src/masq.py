@@ -8,25 +8,25 @@ from copy import deepcopy
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a deep copied dictionary to mask target key's value.'''
     if not isinstance(masq_length,int):
-        raise MasqLengthError(ERR_01())
+        raise MasqLengthError('masq_length must be an integer.')
     
     if masq_length < -1:
-        raise MasqLengthError(ERR_02())
+        raise MasqLengthError('masq_length must be -1 or greater.')
     
     if masq_length > MAX_MASQ_LENGTH:
-        warn(WARN_01, MasqLengthWarning)
+        warn(f'masq_length must be less than or equal to {MAX_MASQ_LENGTH}', MasqLengthWarning)
 
     if not isinstance(masq_string,str):
-        raise MasqStringError(ERR_03(masq_string))
+        raise MasqStringError(f'masq_string "{masq_string}" must be a string')
     
     if len(masq_string) > MAX_MASQ_LENGTH:
-        raise MasqStringError(ERR_04(masq_string))
+        raise MasqStringError(f'masq_string "{masq_string}" must have a length <= {MAX_MASQ_LENGTH}')
 
     if not isinstance(masq_char,str):
-        raise MasqCharError(ERR_03(masq_char))
+        raise MasqCharError(f'masq_char "{masq_char}" must be type string')
     
     if len(masq_char) > 1 and masq_char not in masq_char_specials():
-        raise MasqCharError(ERR_05(masq_char))
+        raise MasqCharError(f'masq_char "{masq_char}" must be a str of length 1 or one of the following special strings:\n{masq_char_specials()}')
 
     def wrapper_2(func):
         def wrapper_1():
@@ -37,7 +37,7 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
             elif isinstance(output, dict):
                 return _masq_dict(target_keys, output, masq_char, masq_length, masq_string)
             else:
-                raise FunctionReturnTypeError(ERR_06(func.__name__))
+                raise FunctionReturnTypeError(f'{func.__name__} does not return a dictionary or list of dictionaries and cannot be decorated with @masq')
         return wrapper_1
     return wrapper_2
 
@@ -66,7 +66,7 @@ def _masq_key(target_key, target_dict, masq_char, masq_length, masq_string):
             next_target_key = '.'.join(keys[1:])
             _masq_key(next_target_key, nested_dict, masq_char, masq_length, masq_string)
     except:
-        raise MasqKeyError()
+        raise MasqKeyError(f'{target_key} is not a valid dict key in this dictionary')
 
 #masq_string generation
 
@@ -74,7 +74,7 @@ def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_stri
     
     if masq_string != '':
         if masq_char!='*' or masq_length!=3:
-            warn('masq_string overrides the other parameters in the masq decorator so may lead to unexpected masqing', MasqKeywordArgumentConflict )
+            warn('masq_string overrides the other parameters in the masq decorator so may lead to unexpected masqing', MasqKeywordArgumentConflict)
         return masq_string
     
     if len(masq_char)==1 :
@@ -85,13 +85,13 @@ def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_stri
         masq_func = _get_random_int_char
     elif masq_char == 'alphas':
         masq_func = _get_random_alpha_char
-    else: raise Exception
+    else: raise MasqCharError(f'{masq_char} is not a valid masq_char value. Must equal one of: {masq_char_specials()}, string of length 1 or "" ')
 
     masqed_value_chars=[]
 
     if not isinstance(value_to_masq, str) and masq_length == -1:
         masq_length = DEFAULT_MASQ_LENGTH
-        warn(f'hey', NonStringWarning)
+        warn(f'{value_to_masq} is not a string and cannot be masqed using masq_length =-1. {DEFAULT_MASQ_LENGTH*masq_char} applied ', NonStringWarning)
     else:
         masq_length = masq_length if masq_length >=0 else len(value_to_masq)
         masq_length = MAX_MASQ_LENGTH if masq_length > MAX_MASQ_LENGTH else masq_length
@@ -102,7 +102,7 @@ def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_stri
     return ''.join(masqed_value_chars)
 
 def _get_random_grawlix_char():
-    return choice(['!','@','£',"$",'%','&','*','?','#','~'])
+    return choice(['!','@','£','$','%','&','*','?','#','~'])
 
 def _get_random_int_char():
     return randint(0,9)

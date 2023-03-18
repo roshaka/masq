@@ -11,4 +11,3 @@ def masq_char_specials():
         MAX_CHAR_NUMERICS,
         MAX_CHAR_GRAWLIX
     ]
-

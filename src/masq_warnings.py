@@ -1,4 +1,4 @@
-from masq_constant import *
+from src.masq_constant import *
 
 class MasqWarning(Warning):
     pass
@@ -12,4 +12,4 @@ class MasqLengthWarning(MasqWarning):
 class NonStringWarning(MasqWarning):
     pass
 
-WARN_01 = f'masq_length must be less than or equal to {MAX_MASQ_LENGTH}'
+ 
