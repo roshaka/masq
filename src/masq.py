@@ -8,25 +8,25 @@ from copy import deepcopy
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a deep copied dictionary to mask target key's value.'''
     if not isinstance(masq_length,int):
-        raise MasqLengthError("masq_length must be an integer.")
+        raise MasqLengthError(ERR_01())
     
     if masq_length < -1:
-        raise MasqLengthError("masq_length must be -1 or greater.")
+        raise MasqLengthError(ERR_02())
     
     if masq_length > MAX_MASQ_LENGTH:
-        warn(f'masq_length must be less than or equal to {MAX_MASQ_LENGTH}', MasqLengthWarning)
+        warn(WARN_01, MasqLengthWarning)
 
     if not isinstance(masq_string,str):
-        raise MasqStringError(f'masq_string "{masq_string}" must be a string')
+        raise MasqStringError(ERR_03(masq_string))
     
     if len(masq_string) > MAX_MASQ_LENGTH:
-        raise MasqStringError(f'masq_string "{masq_string}" must have a length <= {MAX_MASQ_LENGTH}')
+        raise MasqStringError(ERR_04(masq_string))
 
     if not isinstance(masq_char,str):
-        raise MasqCharError(f'masq_char "{masq_char}" must be type string')
+        raise MasqCharError(ERR_03(masq_char))
     
     if len(masq_char) > 1 and masq_char not in masq_char_specials():
-        raise MasqCharError(f'masq_char "{masq_char}" must be a str of length 1 or one of the following special strings:\n{masq_char_specials()}')
+        raise MasqCharError(ERR_05(masq_char))
 
     def wrapper_2(func):
         def wrapper_1():
@@ -37,7 +37,7 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
             elif isinstance(output, dict):
                 return _masq_dict(target_keys, output, masq_char, masq_length, masq_string)
             else:
-                raise FunctionReturnTypeError(f'{func.__name__} does not return a dictionary or list of dictionaries and cannot be decorated with @masq')
+                raise FunctionReturnTypeError(ERR_06(func.__name__))
         return wrapper_1
     return wrapper_2
 
