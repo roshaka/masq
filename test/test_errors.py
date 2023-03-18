@@ -1,7 +1,6 @@
 '''
 Tests for errors with @masq decorator.
 '''
-
 from src.masq import masq
 from src.masq_errors import MasqKeyError, MasqStringError, MasqLengthError
 from src.masq_errors import FunctionReturnTypeError, MasqCharError

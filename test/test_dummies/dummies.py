@@ -1,5 +1,4 @@
 '''Functions used to return a dictionary or list of dictionaries for testing.'''
-
 def dummy_dict():
     '''Returns a dict for simplifed testing setup.'''
     return {

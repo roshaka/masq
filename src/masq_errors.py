@@ -1,5 +1,4 @@
 '''Errors raised by the @masq decorator.'''
-
 class MasqError(Exception):
     pass
 

@@ -1,5 +1,7 @@
 """
-This module can mask the values of dictionaries by using the masq decorator.
+This module can mask the values of dictionaries by using the @masq decorator.
+Keys passed to @masq will replace their paired value with a masq string.
+@masq can decorate functions that return a dictionary of list of dictionaries. 
 
 To generate HTML documentation for this module issue commands with pydoc
 """
@@ -16,9 +18,54 @@ def masq(
         masq_char='*',
         masq_length=3,
         masq_string='',
-        hide_warnings=True
+        emit_warnings=False
     ):
-    '''Decorate a func that returns a dictionary to mask values.'''
+    '''
+    Decorate a function that returns a dict or list of dicts to mask selected values.
+
+    Parameters:
+
+        *target_keys: The keys of the dictionary to be masked.
+            @masg can take any number of *args.
+            Valid inputs are of type:
+                - string
+                - int
+                - float
+                - bool
+            
+            Use dot notation to access nested keys if all eg "deep.nested.key".
+            All nested keys must be strings.
+
+        masq_char: The char to be used in the generated masq_string.
+            default = '*'
+            Valid inputs are:
+                - a string of length 1 eg. 'x', '?', '0', '-'
+                - 'grawlax' returns random string eg. '!$?&*#'
+                - 'alphas' returns random string eg. 'khJLIpxvQs'
+                - 'numerics' returns random string eg. '091248191'
+
+        masq_length: The length of the generated_masq string.
+            default = 3
+            Valid lengths are:
+                - 0 <= len <=32
+                - -1 sets masq_length equal to the len(value) if type(value) i string
+
+        masq_string: A custom masq string to be applied.
+            default = ''
+            Ignored if default. len(masq_string) must be <= 32.s
+            Setting a custom masq_string will override other @masq arguments.
+
+        emit_warnings: Controls whether warnings are logged to the console.
+            default = False
+            Warnings are emitted when conflicting args could cause unexpected results.
+
+    Returns:
+
+        If decorating a function that returns a dict:
+            dict: The values are replaced with the masq_string
+        If decorating a function that returns a list of dicts:
+            list of dicts: The values of each dict are replaced with the masq_string
+    '''
     if not isinstance(masq_length,int):
         raise MasqLengthError('masq_length must be an integer')
     
@@ -52,7 +99,7 @@ def masq(
                             masq_char,
                             masq_length, 
                             masq_string,
-                            hide_warnings
+                            emit_warnings
                         )
                         for d in output]
             elif isinstance(output, dict):
@@ -62,7 +109,7 @@ def masq(
                     masq_char,
                     masq_length,
                     masq_string,
-                    hide_warnings
+                    emit_warnings
                 )
             else:
                 raise FunctionReturnTypeError(f'{func.__name__} cannot be masqed')
@@ -138,11 +185,11 @@ def _generate_masq_string(
         masq_char,
         masq_length,
         masq_string,
-        hide_warnings
+        emit_warnings
     ):
     if masq_string != '':
         if masq_char!='*' or masq_length!=3:
-            if not hide_warnings:
+            if emit_warnings:
                 warn('masq_string overrides other args', MasqKeywordConflict)
         return masq_string
     
@@ -164,7 +211,8 @@ def _generate_masq_string(
 
     if not isinstance(value_to_masq, str) and masq_length == -1:
         masq_length = DEFAULT_MASQ_LENGTH
-        warn(f'"{value_to_masq}" is not a string', NonStringWarning)
+        if emit_warnings:
+            warn(f'"{value_to_masq}" is not a string', NonStringWarning)
     else:
         masq_length = masq_length if masq_length >=0 else len(value_to_masq)
         masq_length = MAX_MASQ_LENGTH if masq_length > MAX_MASQ_LENGTH else masq_length

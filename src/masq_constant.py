@@ -1,5 +1,4 @@
 '''Constants used by the @masq decorator.'''
-
 DEFAULT_MASQ_LENGTH=3
 MAX_MASQ_LENGTH=32
 

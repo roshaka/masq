@@ -1,7 +1,6 @@
 '''
 Tests for @masq decorator.
 '''
-
 from src.masq import masq
 from unittest.mock import patch
 from test_dummies.dummies import dummy_dict, dummy_dicts_list
@@ -442,7 +441,7 @@ def test_mask_string_overwrites_other_params_and_sets_value_equal_to_mask_string
 def test_masq_max_length_limits_masq_string_dict():
     '''Tests max_length is limited to max_masq_length for key in dict.'''
     with pytest.warns(Warning):
-        @masq('name', masq_length=100, hide_warnings=False )
+        @masq('name', masq_length=100, emit_warnings=False )
         def foo():
             return dummy_dict()
     
@@ -460,7 +459,7 @@ def test_masq_max_length_limits_masq_string_dict():
 def test_masq_max_length_limits_masq_string_dicts_list():
     '''Tests max_length is limited to max_masq_length for key in dicts list.'''
     with pytest.warns(Warning):
-        @masq('name', masq_length=100, hide_warnings=False)
+        @masq('name', masq_length=100, emit_warnings=False)
         def foo():
             return dummy_dicts_list()
     
