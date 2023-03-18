@@ -1,9 +1,7 @@
-from src.masq_constant import *
-
 class MasqWarning(Warning):
     pass
 
-class MasqKeywordArgumentConflict(MasqWarning):
+class MasqKeywordConflict(MasqWarning):
     pass
 
 class MasqLengthWarning(MasqWarning):

@@ -1,25 +1,26 @@
 from src.masq import masq
 from test_dummies.dummies import dummy_dict
-from src.masq_warnings import *
+from src.masq_warnings import NonStringWarning, MasqKeywordConflict, MasqLengthWarning
 import pytest
 
-def test_conflicting_masq_decorator_params_raise_warning():
+def test_conflicting_masq_args_raise_warning():
+    '''Tests for warning if conflicting masq args are used.'''
     @masq('name', 'email', masq_string='REDACTED', masq_char='s')
     def foo():
         return dummy_dict()
 
-    with pytest.warns(MasqKeywordArgumentConflict):
+    with pytest.warns(MasqKeywordConflict):
         foo()
 
-def test_masq_length_greater_than_32_raises_MasqLengthWarning():
+def test_masq_length_greater_than_max_masq_length_raises_MasqLengthWarning():
+    '''Tests max length of masq_string is limited to max_masq_length. '''
     with pytest.warns(MasqLengthWarning):
         @masq('name', masq_length=100)
         def foo():
             return dummy_dict()
-        
-    # TODO masq_length max length or =-1 on non string value
 
 def test_masq_raises_warning_for_max_length_minus_one_on_non_string_value():
+    '''Tests error is raised when trying to get masq_length from non-string value.'''
     input= {
     'name': 'Jane Smith',
     'email': 'jane@coolmail.com',

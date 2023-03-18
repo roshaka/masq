@@ -1,4 +1,3 @@
-# Utility functions for testing
 def dummy_dict():
     '''Returns a dict for simplifed testing setup.'''
     return {

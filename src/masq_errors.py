@@ -1,5 +1,3 @@
-from src.masq_constant import *
-
 class MasqError(Exception):
     pass
 
