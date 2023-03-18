@@ -1,3 +1,8 @@
+"""
+This module can mask the values of dictionaries by using the masq decorator.
+
+To generate HTML documentation for this module issue commands with pydoc
+"""
 from random import choice, randint
 from warnings import warn
 from src.masq_warnings import MasqLengthWarning, NonStringWarning, MasqKeywordConflict
@@ -6,7 +11,13 @@ from src.masq_errors import FunctionReturnTypeError, MasqKeyError
 from src.masq_constant import MAX_MASQ_LENGTH, DEFAULT_MASQ_LENGTH, masq_char_specials
 from copy import deepcopy
 
-def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
+def masq(
+        *target_keys, 
+        masq_char='*',
+        masq_length=3,
+        masq_string='',
+        hide_warnings=True
+    ):
     '''Decorate a func that returns a dictionary to mask values.'''
     if not isinstance(masq_length,int):
         raise MasqLengthError('masq_length must be an integer')
@@ -40,7 +51,8 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
                             d, 
                             masq_char,
                             masq_length, 
-                            masq_string
+                            masq_string,
+                            hide_warnings
                         )
                         for d in output]
             elif isinstance(output, dict):
@@ -49,7 +61,8 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
                     output, 
                     masq_char,
                     masq_length,
-                    masq_string
+                    masq_string,
+                    hide_warnings
                 )
             else:
                 raise FunctionReturnTypeError(f'{func.__name__} cannot be masqed')
@@ -58,18 +71,37 @@ def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
 
 # utility funcs
 
-def _masq_dict(target_keys, target_dict, masq_char, masq_length, masq_string):
-    
+def _masq_dict(
+        target_keys,
+        target_dict,
+        masq_char,
+        masq_length, 
+        masq_string,
+        hide_warnings
+    ):
     copy_dict = deepcopy(target_dict)
     if not len(target_keys):
         return copy_dict
 
     for target_key in target_keys:
-        _masq_key(target_key, copy_dict, masq_char, masq_length, masq_string)
-        
+        _masq_key(
+            target_key,
+            copy_dict,
+            masq_char,
+            masq_length,
+            masq_string,
+            hide_warnings
+        )
     return copy_dict
 
-def _masq_key(target_key, target_dict, masq_char, masq_length, masq_string):
+def _masq_key(
+        target_key,
+        target_dict,
+        masq_char,
+        masq_length,
+        masq_string,
+        hide_warnings
+    ):
     try:
         if isinstance(target_key, str):
             keys = target_key.split('.')
@@ -81,22 +113,37 @@ def _masq_key(target_key, target_dict, masq_char, masq_length, masq_string):
                 target_dict[key],
                 masq_char,
                 masq_length,
-                masq_string)
+                masq_string,
+                hide_warnings
+            )
             target_dict[key] = masq
         else :
             nested_dict = target_dict[keys[0]]
             next_target_key = '.'.join(keys[1:])
-            _masq_key(next_target_key, nested_dict, masq_char, masq_length, masq_string)
+            _masq_key(
+                next_target_key, 
+                nested_dict, 
+                masq_char, 
+                masq_length, 
+                masq_string,
+                hide_warnings
+            )
     except Exception:
         raise MasqKeyError(f'{target_key} is not a valid dict key in this dictionary')
 
 #masq_string generation
 
-def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_string=''):
-    
+def _generate_masq_string(
+        value_to_masq,
+        masq_char,
+        masq_length,
+        masq_string,
+        hide_warnings
+    ):
     if masq_string != '':
         if masq_char!='*' or masq_length!=3:
-            warn('masq_string overrides other args', MasqKeywordConflict)
+            if not hide_warnings:
+                warn('masq_string overrides other args', MasqKeywordConflict)
         return masq_string
     
     def _masq_char():

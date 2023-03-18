@@ -1,3 +1,5 @@
+'''Warnings raised by the @masq decorator.'''
+
 class MasqWarning(Warning):
     pass
 
