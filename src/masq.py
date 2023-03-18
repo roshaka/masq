@@ -89,14 +89,12 @@ def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_stri
 
     masqed_value_chars=[]
 
-    try:
-        val_length = len(value_to_masq)
-    except:
-        val_length=DEFAULT_MASQ_LENGTH
-        #TODO raise warning
-
-    masq_length = masq_length if masq_length >=0 else val_length
-    masq_length = MAX_MASQ_LENGTH if masq_length > MAX_MASQ_LENGTH else masq_length
+    if not isinstance(value_to_masq, str) and masq_length == -1:
+        masq_length = DEFAULT_MASQ_LENGTH
+        warn(f'hey', NonStringWarning)
+    else:
+        masq_length = masq_length if masq_length >=0 else len(value_to_masq)
+        masq_length = MAX_MASQ_LENGTH if masq_length > MAX_MASQ_LENGTH else masq_length
 
     for i in range(masq_length):
          masqed_value_chars.append(masq_func())

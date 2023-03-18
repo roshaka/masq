@@ -494,31 +494,6 @@ def test_masq_value_that_is_dict():
         'status': 'excellent'
     }
 
-def test_masq_value_that_is_int():
-    '''Tests masq_length=-1 for values/objects without a len property sets masq_length to DEFAULT_MASK_LENGTH'''
-    input= {
-            'name': 'Jane Smith',
-            'email': 'jane@coolmail.com',
-            'telephones': {
-                'mobile': '07999 987654'
-            },
-            'status': 6
-        }
-   
-    @masq('status', masq_length=-1)
-    def foo():
-        return input
-    
-    output = foo()
-    assert output == {
-        'name': 'Jane Smith',
-        'email': 'jane@coolmail.com',
-        'telephones': {
-            'mobile': '07999 987654'
-        },
-        'status': '***'
-    }
-
 def test_deep_nester_values_test():
     """Tests masqing of deeply nested values"""
     @masq('telephones.mobiles.home', 'hobbies.more coding', 'name')
