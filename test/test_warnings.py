@@ -16,3 +16,5 @@ def test_masq_length_greater_than_32_raises_MasqLengthWarning():
         @masq('name', masq_length=100)
         def foo():
             return dummy_dict()
+        
+    # TODO masq_length max length or =-1 on non string value

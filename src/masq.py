@@ -7,10 +7,26 @@ from copy import deepcopy
 
 def masq(*target_keys, masq_char='*', masq_length=3, masq_string=''):
     '''Decorate a func that returns a deep copied dictionary to mask target key's value.'''
+    if not isinstance(masq_length,int):
+        raise MasqLengthError("masq_length must be an integer.")
     
-    _validate_masq_char(masq_char)
-    _validate_masq_length(masq_length)
-    _validate_masq_string(masq_string)
+    if masq_length < -1:
+        raise MasqLengthError("masq_length must be -1 or greater.")
+    
+    if masq_length > MAX_MASQ_LENGTH:
+        warn(f'masq_length must be less than or equal to {MAX_MASQ_LENGTH}', MasqLengthWarning)
+
+    if not isinstance(masq_string,str):
+        raise MasqStringError(f'masq_string "{masq_string}" must be a string')
+    
+    if len(masq_string) > MAX_MASQ_LENGTH:
+        raise MasqStringError(f'masq_string "{masq_string}" must have a length <= {MAX_MASQ_LENGTH}')
+
+    if not isinstance(masq_char,str):
+        raise MasqCharError(f'masq_char "{masq_char}" must be type string')
+    
+    if len(masq_char) > 1 and masq_char not in masq_char_specials():
+        raise MasqCharError(f'masq_char "{masq_char}" must be a str of length 1 or one of the following special strings:\n{masq_char_specials()}')
 
     def wrapper_2(func):
         def wrapper_1():
@@ -61,12 +77,6 @@ def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_stri
             warn('masq_string overrides the other parameters in the masq decorator so may lead to unexpected masqing', MasqKeywordArgumentConflict )
         return masq_string
     
-    masq_length = masq_length if masq_length >=0 else len(value_to_masq)
-    masq_length = MAX_MASQ_LENGTH if masq_length > MAX_MASQ_LENGTH else masq_length
-
-    masqed_value_chars=[]
-    masq_func= None
-    
     if len(masq_char)==1 :
         masq_func = lambda : masq_char
     elif masq_char == 'grawlix':
@@ -76,6 +86,17 @@ def _generate_masq_string(value_to_masq, masq_char='*', masq_length=3, masq_stri
     elif masq_char == 'alphas':
         masq_func = _get_random_alpha_char
     else: raise Exception
+
+    masqed_value_chars=[]
+
+    try:
+        val_length = len(value_to_masq)
+    except:
+        val_length=DEFAULT_MASQ_LENGTH
+        #TODO raise warning
+
+    masq_length = masq_length if masq_length >=0 else val_length
+    masq_length = MAX_MASQ_LENGTH if masq_length > MAX_MASQ_LENGTH else masq_length
 
     for i in range(masq_length):
          masqed_value_chars.append(masq_func())
@@ -89,34 +110,5 @@ def _get_random_int_char():
     return randint(0,9)
 
 def _get_random_alpha_char():
-    ascii_alphas = list(range(67,91))
-    ascii_alphas.extend(list(range(97,123)))
-    return chr(choice(ascii_alphas))
-
-# validate decorator arguments
-
-def _validate_masq_length(masq_length):
-    if not isinstance(masq_length,int):
-        raise MasqLengthError("masq_length must be an integer.")
-    
-    if masq_length < -1:
-        raise MasqLengthError("masq_length must be -1 or greater.")
-    
-    if masq_length > MAX_MASQ_LENGTH:
-        warn(f'masq_length must be less than or equal to {MAX_MASQ_LENGTH}', MasqLengthWarning)
-    
-def _validate_masq_string(masq_string):
-    if not isinstance(masq_string,str):
-        raise MasqStringError(f'masq_string "{masq_string}" must be a string')
-    
-    if len(masq_string) > MAX_MASQ_LENGTH:
-        raise MasqStringError(f'masq_string "{masq_string}" must have a length <= {MAX_MASQ_LENGTH}')
-
-def _validate_masq_char(masq_char):
-    if not isinstance(masq_char,str):
-        raise MasqCharError(f'masq_char "{masq_char}" must be type string')
-    
-    if len(masq_char) > 1 and masq_char not in masq_char_specials():
-        raise MasqCharError(f'masq_char "{masq_char}" must be a str of length 1 or one of the following special strings:\n{masq_char_specials()}')
-
-
+    ascii=list(range(67,91))+(list(range(97,123)))
+    return chr(choice(ascii))
